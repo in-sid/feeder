@@ -48,6 +48,7 @@ interface BlocklistDao {
             update feed_items
             set block_time = case
                 when exists(select 1 from blocklist where lower(feed_items.plain_title) glob blocklist.glob_pattern)
+                     OR (exists(select 1 from allowlist) AND NOT exists(select 1 from allowlist where lower(feed_items.plain_title) glob allowlist.glob_pattern))
                 then coalesce(block_time, :blockTime)
                 else null
                 end
@@ -60,6 +61,7 @@ interface BlocklistDao {
             update feed_items
             set block_time = case
                 when exists(select 1 from blocklist where lower(feed_items.plain_title) glob blocklist.glob_pattern or lower(feed_items.plain_snippet) glob blocklist.glob_pattern)
+                     OR (exists(select 1 from allowlist) AND NOT exists(select 1 from allowlist where lower(feed_items.plain_title) glob allowlist.glob_pattern or lower(feed_items.plain_snippet) glob allowlist.glob_pattern))
                 then coalesce(block_time, :blockTime)
                 else null
                 end
@@ -83,6 +85,7 @@ interface BlocklistDao {
             update feed_items
             set block_time = case
                 when exists(select 1 from blocklist where lower(feed_items.plain_title) glob blocklist.glob_pattern)
+                     OR (exists(select 1 from allowlist) AND NOT exists(select 1 from allowlist where lower(feed_items.plain_title) glob allowlist.glob_pattern))
                 then :blockTime
                 else null
                 end
@@ -96,6 +99,7 @@ interface BlocklistDao {
             update feed_items
             set block_time = case
                 when exists(select 1 from blocklist where lower(feed_items.plain_title) glob blocklist.glob_pattern or lower(feed_items.plain_snippet) glob blocklist.glob_pattern)
+                     OR (exists(select 1 from allowlist) AND NOT exists(select 1 from allowlist where lower(feed_items.plain_title) glob allowlist.glob_pattern or lower(feed_items.plain_snippet) glob allowlist.glob_pattern))
                 then :blockTime
                 else null
                 end
@@ -121,6 +125,7 @@ interface BlocklistDao {
             update feed_items
             set block_time = case
                 when exists(select 1 from blocklist where lower(feed_items.plain_title) glob blocklist.glob_pattern)
+                     OR (exists(select 1 from allowlist) AND NOT exists(select 1 from allowlist where lower(feed_items.plain_title) glob allowlist.glob_pattern))
                 then :blockTime
                 else null
                 end
@@ -137,6 +142,7 @@ interface BlocklistDao {
             update feed_items
             set block_time = case
                 when exists(select 1 from blocklist where lower(feed_items.plain_title) glob blocklist.glob_pattern or lower(feed_items.plain_snippet) glob blocklist.glob_pattern)
+                     OR (exists(select 1 from allowlist) AND NOT exists(select 1 from allowlist where lower(feed_items.plain_title) glob allowlist.glob_pattern or lower(feed_items.plain_snippet) glob allowlist.glob_pattern))
                 then :blockTime
                 else null
                 end

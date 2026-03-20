@@ -222,6 +222,18 @@ class Repository(
         runOnceBlocklistUpdate(di)
     }
 
+    val allowList: Flow<List<String>> = settingsStore.allowListPreference
+
+    suspend fun addAllowlistPattern(pattern: String) {
+        settingsStore.addAllowlistPattern(pattern)
+        runOnceBlocklistUpdate(di)
+    }
+
+    suspend fun removeAllowlistPattern(pattern: String) {
+        settingsStore.removeAllowlistPattern(pattern)
+        runOnceBlocklistUpdate(di)
+    }
+
     val applyBlocklistToSummaries: StateFlow<Boolean> = settingsStore.applyBlocklistToSummaries
 
     suspend fun setApplyBlocklistToSummaries(value: Boolean) {

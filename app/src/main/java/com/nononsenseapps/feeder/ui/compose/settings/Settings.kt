@@ -158,6 +158,7 @@ fun SettingsScreen(
             feedItemStyleValue = viewState.feedItemStyle,
             onFeedItemStyleChange = settingsViewModel::setFeedItemStyle,
             blockListValue = ImmutableHolder(viewState.blockList.sorted()),
+            allowListValue = ImmutableHolder(viewState.allowList.sorted()),
             applyBlocklistToSummaries = viewState.applyBlocklistToSummaries,
             onApplyBlocklistToSummariesChange = settingsViewModel::setApplyBlocklistToSummaries,
             swipeAsReadValue = viewState.swipeAsRead,
@@ -188,6 +189,8 @@ fun SettingsScreen(
             onUseDynamicTheme = settingsViewModel::setUseDynamicTheme,
             onBlockListAdd = settingsViewModel::addToBlockList,
             onBlockListRemove = settingsViewModel::removeFromBlockList,
+            onAllowListAdd = settingsViewModel::addToAllowList,
+            onAllowListRemove = settingsViewModel::removeFromAllowList,
             feedsSettings = ImmutableHolder(viewState.feedsSettings),
             onToggleNotification = settingsViewModel::toggleNotifications,
             isMarkAsReadOnScroll = viewState.isMarkAsReadOnScroll,
@@ -239,6 +242,7 @@ private fun SettingsScreenPreview() {
             feedItemStyleValue = FeedItemStyle.CARD,
             onFeedItemStyleChange = {},
             blockListValue = ImmutableHolder(emptyList()),
+            allowListValue = ImmutableHolder(emptyList()),
             applyBlocklistToSummaries = false,
             onApplyBlocklistToSummariesChange = {},
             swipeAsReadValue = SwipeAsRead.ONLY_FROM_END,
@@ -269,6 +273,8 @@ private fun SettingsScreenPreview() {
             onUseDynamicTheme = {},
             onBlockListAdd = {},
             onBlockListRemove = {},
+            onAllowListAdd = {},
+            onAllowListRemove = {},
             feedsSettings = ImmutableHolder(emptyList()),
             onToggleNotification = { _, _ -> },
             isMarkAsReadOnScroll = false,
@@ -309,6 +315,7 @@ fun SettingsList(
     feedItemStyleValue: FeedItemStyle,
     onFeedItemStyleChange: (FeedItemStyle) -> Unit,
     blockListValue: ImmutableHolder<List<String>>,
+    allowListValue: ImmutableHolder<List<String>>,
     applyBlocklistToSummaries: Boolean,
     onApplyBlocklistToSummariesChange: (Boolean) -> Unit,
     swipeAsReadValue: SwipeAsRead,
@@ -339,6 +346,8 @@ fun SettingsList(
     onUseDynamicTheme: (Boolean) -> Unit,
     onBlockListAdd: (String) -> Unit,
     onBlockListRemove: (String) -> Unit,
+    onAllowListAdd: (String) -> Unit,
+    onAllowListRemove: (String) -> Unit,
     feedsSettings: ImmutableHolder<List<UIFeedSettings>>,
     onToggleNotification: (Long, Boolean) -> Unit,
     isMarkAsReadOnScroll: Boolean,
@@ -455,6 +464,31 @@ fun SettingsList(
             onAddItem = onBlockListAdd,
             onRemoveItem = onBlockListRemove,
             onToggleChange = onApplyBlocklistToSummariesChange,
+        )
+
+        ListDialogSetting(
+            title = stringResource(id = R.string.allow_list),
+            dialogTitle = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.allow_list),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                    Text(
+                        text = stringResource(id = R.string.allow_list_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Text(
+                        text = "feeder feed?r fe*er",
+                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = LocalTypographySettings.current.monoFontFamily),
+                    )
+                }
+            },
+            currentValue = allowListValue,
+            onAddItem = onAllowListAdd,
+            onRemoveItem = onAllowListRemove,
         )
 
         NotificationsSetting(

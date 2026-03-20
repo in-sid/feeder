@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.annotation.StringRes
 import com.nononsenseapps.feeder.R
 import com.nononsenseapps.feeder.background.schedulePeriodicRssSync
+import com.nononsenseapps.feeder.db.room.AllowlistDao
 import com.nononsenseapps.feeder.db.room.BlocklistDao
 import com.nononsenseapps.feeder.db.room.ID_UNSET
 import com.nononsenseapps.feeder.ui.compose.feedarticle.FeedListFilter
@@ -34,6 +35,7 @@ class SettingsStore(
 ) : DIAware {
     private val sp: SharedPreferences by instance()
     private val blocklistDao: BlocklistDao by instance()
+    private val allowlistDao: AllowlistDao by instance()
     private val filePathProvider: FilePathProvider by instance()
 
     private val _addedFeederNews = MutableStateFlow(sp.getBoolean(PREF_ADDED_FEEDER_NEWS, false))
@@ -462,6 +464,32 @@ class SettingsStore(
             blocklistDao.insertSafely(value.lowercase().trim())
         } catch (e: SQLiteConstraintException) {
             // Ignore: Query style method can't define ignore on constraint failures
+        }
+    }
+
+    val allowListPreference: Flow<List<String>>
+        get() =
+            allowlistDao
+                .getGlobPatterns()
+                .mapLatest { patterns ->
+                    patterns.map { pattern ->
+                        // Remove start and ending *
+                        pattern.dropEnds(1, 1)
+                    }
+                }
+
+    suspend fun removeAllowlistPattern(value: String) {
+        allowlistDao.deletePattern(value)
+    }
+
+    suspend fun addAllowlistPattern(value: String) {
+        if (value.isBlank()) {
+            return
+        }
+        try {
+            allowlistDao.insertSafely(value.lowercase().trim())
+        } catch (e: SQLiteConstraintException) {
+            // Ignore
         }
     }
 

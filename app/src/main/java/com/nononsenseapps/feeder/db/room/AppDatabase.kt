@@ -45,6 +45,7 @@ private const val LOG_TAG = "FEEDER_APPDB"
         Feed::class,
         FeedItem::class,
         BlocklistEntry::class,
+        AllowlistEntry::class,
         SyncRemote::class,
         ReadStatusSynced::class,
         RemoteReadMark::class,
@@ -54,7 +55,7 @@ private const val LOG_TAG = "FEEDER_APPDB"
     views = [
         FeedsWithItemsForNavDrawer::class,
     ],
-    version = 38,
+    version = 39,
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -63,6 +64,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun feedItemDao(): FeedItemDao
 
     abstract fun blocklistDao(): BlocklistDao
+
+    abstract fun allowlistDao(): AllowlistDao
 
     abstract fun syncRemoteDao(): SyncRemoteDao
 
@@ -137,6 +140,7 @@ fun getAllMigrations(di: DI) =
         MigrationFrom35To36(di),
         MigrationFrom36To37(di),
         MigrationFrom37To38(di),
+        MigrationFrom38To39(di),
     )
 
 /*
@@ -198,6 +202,27 @@ class MigrationFrom37To38(
         database.execSQL(
             """
             ALTER TABLE feeds ADD COLUMN summarize_on_open INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+    }
+}
+
+class MigrationFrom38To39(
+    override val di: DI,
+) : Migration(38, 39),
+    DIAware {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `allowlist`
+                (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                 `glob_pattern` TEXT NOT NULL)
+            """.trimIndent(),
+        )
+
+        database.execSQL(
+            """
+            CREATE UNIQUE INDEX IF NOT EXISTS `index_allowlist_glob_pattern` on `allowlist` (`glob_pattern`)
             """.trimIndent(),
         )
     }
